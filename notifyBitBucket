@@ -1,0 +1,22 @@
+//update build status of Bitbucket commits
+void notifyBitbucket(state)
+{
+    if(env.pullrequest_source_commit_links_self_href != null){
+        def object_data = "{\"state\": \"${state}\",\"key\": \"${env.JOB_NAME} ${currentBuild.displayName}\",\"name\": \"${env.JOB_NAME} ${currentBuild.displayName}\",\"url\": \"https://jenkins:9443/job/${env.JOB_NAME}/${currentBuild.number}/\",\"description\": \"\"}"
+        def response = httpRequest authentication: '<credential ID>', acceptType: 'APPLICATION_JSON', contentType: 'APPLICATION_JSON', httpMode: 'POST', requestBody: object_data, url: "${env.pullrequest_source_commit_links_self_href}/statuses/build"
+    }
+}
+
+pipeline {
+    agent any
+    stages {
+      stage('stage1') {
+        script {
+          notifyBitbucket('SUCCESSFUL')
+        }
+      }
+    }
+}
+
+
+
